@@ -12,6 +12,12 @@ router.use(authMiddleware)
 
 // Users
 router.put('/users',controllers.userController.update)
+router.get('/users/me', controllers.userController.me)
+router.get('/feed', controllers.userController.feed)
+// Follows
+router.post('/follow/:id', controllers.followController.create)
+router.delete('/unfollow/:id' ,controllers.followController.destroy)
+
 
 
 // Tweets

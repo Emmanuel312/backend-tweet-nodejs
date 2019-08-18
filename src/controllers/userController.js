@@ -1,8 +1,42 @@
 const User = require('../models/user')
+const Tweet = require('../models/tweet')
+
 
 module.exports = 
 {
-    async update(req,res)
+    async me(req,res,next)
+    {
+        try
+        {
+            const user = await User.findById(req.userId)
+            const tweetsCount = await Tweet.find({ user: user.id }).count()
+            
+            return res.json({user,tweetsCount,followersCount: user.followers.length, followingCount: user.following.length })
+            
+        }
+        catch(err)
+        {
+            return next(err)
+        }
+    },
+
+    async feed(req,res,next)
+    {
+        try
+        {
+            const user = await User.findById(req.userId)
+            const { following } = user
+            const tweet = await Tweet.find({user: { $in: [user.id,...following ] }}).limit(50).sort('-createdAt')
+            return res.json(tweet)
+        }
+        catch(err)
+        {
+            return next(err)
+        }
+    },
+
+
+    async update(req,res,next)
     {
         try
         {
@@ -26,7 +60,7 @@ module.exports =
         }
         catch(error)
         {
-            
+            return next()
         }
     }
 }
